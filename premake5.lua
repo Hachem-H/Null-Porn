@@ -57,6 +57,18 @@ group "Dependencies"
     		        "%{prj.location}/src/egl_context.c",
     		        "%{prj.location}/src/osmesa_context.c",
     		        "%{prj.location}/src/linux_joystick.c" }
+
+    project "glew"
+        location "%{wks.location}/NullPorn-GUI/Vendor/%{prj.name}"
+        staticruntime "On"
+        kind "StaticLib"
+        language "C"
+
+        targetdir  "%{wks.location}/bin/%{prj.name}"
+        objdir "%{wks.location}/bin-int/%{prj.name}-%{cfg.buildcfg}/"
+
+        files { "%{prj.location}/src/**.c" }
+        includedirs "%{prj.location}/include/"
 group ""
         
 project "NullPorn-Core"
@@ -83,9 +95,10 @@ project "NullPorn-GUI"
 			"%{prj.location}/src/**.h" }
 	includedirs { "%{prj.location}/src",
 				  "%{wks.location}/NullPorn-Core/src",
-                  "%{wks.location}/Vendor/glfw/include",
-                  "%{wks.location}/Vendor/Nuklear/src" }
-	links { "NullPorn-Core", "glfw", "m" }
+                  "%{prj.location}/Vendor/glfw/include",
+                  "%{prj.location}/Vendor/glew/include",
+                  "%{prj.location}/Vendor/Nuklear",  }
+	links { "NullPorn-Core", "glfw", "glew", "GL", "m" }
 
 project "NullPorn-CLI"
     location "%{wks.location}/%{prj.name}"
