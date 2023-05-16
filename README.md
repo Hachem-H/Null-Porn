@@ -1,4 +1,4 @@
-![logo](res/Logo.png)
+![logo](Branding/Logo.png)
 
 # NullPorn
 NullPorn is a project born out of frustration with the increasing presence of pornographic and explicit content on platforms such as [YouTube](https://youtube.com)/[YouTube Shorts](https://shorts.youtube.com) and [TikTok](https://tiktok.com). These platforms have been inundated with spam bots that not only disrupt the user experience but also display offensive and inappropriate material. In response to this issue, I have taken the initiative to create a set of scripts that aim to mitigate the problem, including a DDoS flood script and various DNS tracker scripts.
