@@ -81,7 +81,8 @@ project "NullPorn-Core"
 
     files { "%{prj.location}/src/**.c",
             "%{prj.location}/src/**.h" }
-    includedirs { "%{prj.location}/src" }
+    includedirs { "%{prj.location}/src",
+                  "%{prj.location}/Vendor/stb" }
 
 project "NullPorn-GUI"
 	location "%{wks.location}/%{prj.name}"
@@ -94,7 +95,10 @@ project "NullPorn-GUI"
 	files { "%{prj.location}/src/**.c",
 			"%{prj.location}/src/**.h" }
 	includedirs { "%{prj.location}/src",
+
 				  "%{wks.location}/NullPorn-Core/src",
+				  "%{wks.location}/NullPorn-Core/Vendor/stb",
+
                   "%{prj.location}/Vendor/glfw/include",
                   "%{prj.location}/Vendor/glew/include",
                   "%{prj.location}/Vendor/Nuklear",  }
@@ -111,5 +115,7 @@ project "NullPorn-CLI"
     files { "%{prj.location}/src/**.c",
             "%{prj.location}/src/**.h" }
     includedirs { "%{prj.location}/src",
-                  "%{wks.location}/NullPorn-Core/src" }
+
+                  "%{wks.location}/NullPorn-Core/src",
+                  "%{wks.location}/NullPorn-Core/Vendor/stb", }
     links { "NullPorn-Core" }

@@ -1,11 +1,3 @@
-#include <stdbool.h>
-#include <stdint.h>
-#include <assert.h>
-#include <stdio.h>
-
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
 #define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
 #define NK_INCLUDE_DEFAULT_FONT
@@ -14,7 +6,18 @@
 #define NK_INCLUDE_FONT_BAKING
 #define NK_IMPLEMENTATION
 #define NK_PRIVATE
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <assert.h>
+#include <stdio.h>
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <nuklear.h>
+
+#include <DDoS.h>
+#include <Log.h>
 
 #define MAX_VERTEX_MEMORY  512 * 1024
 #define MAX_ELEMENT_MEMORY 128 * 1024
@@ -132,7 +135,7 @@ static inline void InitializeDevice(Device* device)
 
     glVertexAttribPointer((uint32_t)device->positionAttribute, 2, GL_FLOAT,         false, sizeof(Vertex), (void*) vertexPosition);
     glVertexAttribPointer((uint32_t)device->uvAttribute,       2, GL_FLOAT,         false, sizeof(Vertex), (void*) vertexTexture);
-    glVertexAttribPointer((uint32_t)device->colorAttribute,    4, GL_UNSIGNED_BYTE, true, sizeof(Vertex), (void*) vertexColor);
+    glVertexAttribPointer((uint32_t)device->colorAttribute,    4, GL_UNSIGNED_BYTE, true,  sizeof(Vertex), (void*) vertexColor);
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -258,7 +261,7 @@ static inline void Device_OnRender(Device* device, struct nk_context* context, i
     glDisable(GL_SCISSOR_TEST);
 }
 
-static inline void ErrorCallback(int error, const char* description)      { printf("[GLFW ERROR %d]: %s\n.", error, description);                                            }
+static inline void ErrorCallback(int error, const char* description)      { ERRROR("[GLFW ERROR %d]: %s.", error, description);                                              }
 static inline void TextInput(GLFWwindow* window, unsigned int codepoint)  { nk_input_unicode((struct nk_context*)glfwGetWindowUserPointer(window), codepoint);               }
 static inline void ScrollInput(GLFWwindow* window, double _, double yOff) { nk_input_scroll( (struct nk_context*)glfwGetWindowUserPointer(window), nk_vec2(0, (float)yOff)); }
 
@@ -307,7 +310,7 @@ int main()
 {
     if (!glfwInit())
     {
-        fprintf(stderr, "[ERR]: Failed to initialize GLFW.\n");
+        FATAL("Failed to initialize GLFW.");
         return -1;
     }
 
@@ -336,7 +339,7 @@ int main()
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     if (glewInit() != GLEW_OK)
     {
-        fprintf(stderr, "[ERR]: Failed to initialize GLEW.\n");
+        FATAL("Failed to initialize GLEW.");
         return -1;
     } 
     
