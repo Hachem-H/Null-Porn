@@ -22,8 +22,9 @@
 #define MAX_VERTEX_MEMORY  512 * 1024
 #define MAX_ELEMENT_MEMORY 128 * 1024
 
-#define WINDOW_WIDTH 1280
-#define WINDOW_HEIGHT 720
+#define WINDOW_WIDTH  1280
+#define WINDOW_HEIGHT  720
+#define BUTTON_HEIGHT 0.05
 
 typedef struct Vertex_t
 {
@@ -357,9 +358,36 @@ int main()
     {
         DispatchInput(&context, window);
 
-        if (nk_begin(&context, "NullPorn", nk_rect(0, 0, width, height),
+        if (nk_begin(&context, "menuLeft", nk_rect(0, 0, width-92, height*BUTTON_HEIGHT+10),
                      NK_WINDOW_BORDER | NK_WINDOW_NO_SCROLLBAR))
         {
+            nk_layout_row_static(&context, height*BUTTON_HEIGHT, 80, 2);
+            if (nk_button_label(&context, "Add URL"));
+            if (nk_button_label(&context, "Add IP"));
+        } nk_end(&context);
+
+        if (nk_begin(&context, "menuRight", nk_rect(width-92, 0, 92, height*BUTTON_HEIGHT+10),
+                     NK_WINDOW_BORDER | NK_WINDOW_NO_SCROLLBAR))
+        {
+            nk_layout_row_static(&context, height*BUTTON_HEIGHT, 80, 1);
+            if (nk_button_label(&context, "ATTACK"));
+        } nk_end(&context);
+
+
+        if (nk_begin(&context, "content", nk_rect(0, height*BUTTON_HEIGHT+10, width, height*(1-BUTTON_HEIGHT)+10),
+                     NK_WINDOW_BORDER))
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                nk_layout_row_begin(&context, NK_STATIC, 30, 3);
+                nk_layout_row_push(&context, 35);
+                if (nk_button_label(&context, "[-]"));
+                nk_layout_row_push(&context, 10);
+                nk_label(&context, " ", NK_TEXT_LEFT);
+                nk_layout_row_push(&context, width*0.9);
+                nk_label(&context, "127.0.0.1", NK_TEXT_LEFT);
+                nk_layout_row_end(&context);
+            }
         } nk_end(&context);
 
         glfwGetFramebufferSize(window, &width, &height);

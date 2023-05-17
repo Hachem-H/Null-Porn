@@ -2,14 +2,6 @@
 
 int main()
 {
-    char* temporaryIDs[4] = 
-    {
-        "127.0.0.1",
-        "127.0.0.2",
-        "127.0.0.3",
-        "127.0.0.4",
-    };
-    
     char* windowLabel = "NULL PORN";
     char* addURLLabel = "[Add URL]";
     char* addIpLabel  = "[Add IP]";
@@ -17,31 +9,25 @@ int main()
 
     initscr();
 
-    WINDOW* topContainer    = newwin(3, COLS, 0, 0);
-    WINDOW* middleContainer = newwin(LINES-6, COLS, 3, 0);
-    WINDOW* bottomContainer = newwin(3, COLS, LINES-3, 0);
+    WINDOW* topMenu = newwin(3, COLS, 0, 0);
+    WINDOW* content = newwin(LINES, COLS, 3, 0);
     refresh();
 
-    box(topContainer,    0, 0);
-    box(middleContainer, 0, 0);
-    box(bottomContainer, 0, 0);
+    box(topMenu, 0, 0);
+    box(content, 0, 0);
 
-    mvwprintw(topContainer,    0, (COLS-sizeof(windowLabel))/2, windowLabel);
-    mvwprintw(middleContainer, 0, 1, "Attacked URLs/IPs");
+    mvwprintw(topMenu,    0, (COLS-sizeof(windowLabel))/2, windowLabel);
+    mvwprintw(content, 0, 1, "Attacked URLs/IPs");
 
-    for (int i = 0; i < 4; i++)
-    {
-        mvwprintw(middleContainer, i+1, 2, "(%d) %s", i+1, temporaryIDs[i]);
-        mvwprintw(middleContainer, i+1, COLS-5, "[-]");
-    }
+    for (int i = 0; i < 50; i++)
+        mvwprintw(content, i+1, 2, "[-] 127.0.0.%d", i+1);
 
-    mvwprintw(bottomContainer, 1, (COLS-sizeof(attackLabel))/2, attackLabel);
-    mvwprintw(topContainer, 1, 2, addURLLabel);
-    mvwprintw(topContainer, 1, sizeof(addURLLabel)+4, addIpLabel);
+    mvwprintw(topMenu, 1, 2,                          addURLLabel);
+    mvwprintw(topMenu, 1, sizeof(addURLLabel)+4,      addIpLabel);
+    mvwprintw(topMenu, 1, COLS-sizeof(attackLabel)-2, attackLabel);
 
-    wrefresh(topContainer);
-    wrefresh(middleContainer);
-    wrefresh(bottomContainer);
+    wrefresh(topMenu);
+    wrefresh(content);
     
     getch();
     endwin();
