@@ -1,9 +1,9 @@
 [submodule "NullPorn-GUI/Vendor/glfw"]
-	path = NullPorn-GUI/Vendor/glfw
+	path = Vendor/glfw
 	url = https://github.com/glfw/glfw.git
 [submodule "NullPorn-GUI/Vendor/Nuklear"]
-	path = NullPorn-GUI/Vendor/Nuklear
+	path = Vendor/Nuklear
 	url = https://github.com/Immediate-Mode-UI/Nuklear
 [submodule "NullPorn-Core/Vendor/stb"]
-	path = NullPorn-Core/Vendor/stb
+	path = Vendor/stb
 	url = https://github.com/nothings/stb/

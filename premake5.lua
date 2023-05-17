@@ -19,7 +19,7 @@ workspace "NullPorn"
 
 group "Dependencies"
     project "glfw"
-        location "%{wks.location}/NullPorn-GUI/Vendor/%{prj.name}"
+        location "%{wks.location}/Vendor/%{prj.name}"
         staticruntime "On"
         kind "StaticLib"
         language "C"
@@ -59,7 +59,7 @@ group "Dependencies"
     		        "%{prj.location}/src/linux_joystick.c" }
 
     project "glew"
-        location "%{wks.location}/NullPorn-GUI/Vendor/%{prj.name}"
+        location "%{wks.location}/Vendor/%{prj.name}"
         staticruntime "On"
         kind "StaticLib"
         language "C"
@@ -82,7 +82,8 @@ project "NullPorn-Core"
     files { "%{prj.location}/src/**.c",
             "%{prj.location}/src/**.h" }
     includedirs { "%{prj.location}/src",
-                  "%{prj.location}/Vendor/stb" }
+
+                  "%{wks.location}/Vendor/stb" }
 
 project "NullPorn-GUI"
 	location "%{wks.location}/%{prj.name}"
@@ -95,13 +96,12 @@ project "NullPorn-GUI"
 	files { "%{prj.location}/src/**.c",
 			"%{prj.location}/src/**.h" }
 	includedirs { "%{prj.location}/src",
-
 				  "%{wks.location}/NullPorn-Core/src",
-				  "%{wks.location}/NullPorn-Core/Vendor/stb",
 
-                  "%{prj.location}/Vendor/glfw/include",
-                  "%{prj.location}/Vendor/glew/include",
-                  "%{prj.location}/Vendor/Nuklear",  }
+                  "%{wks.location}/Vendor/glfw/include",
+                  "%{wks.location}/Vendor/glfw/include",
+                  "%{wks.location}/Vendor/Nuklear",  
+                  "%{wks.location}/Vendor/stb",  }
 	links { "NullPorn-Core", "glfw", "glew", "GL", "m" }
 
 project "NullPorn-CLI"
@@ -115,7 +115,7 @@ project "NullPorn-CLI"
     files { "%{prj.location}/src/**.c",
             "%{prj.location}/src/**.h" }
     includedirs { "%{prj.location}/src",
-
                   "%{wks.location}/NullPorn-Core/src",
-                  "%{wks.location}/NullPorn-Core/Vendor/stb", }
+                  
+                  "%{wks.location}/Vendor/stb", }
     links { "NullPorn-Core" }

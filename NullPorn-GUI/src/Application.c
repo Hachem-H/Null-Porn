@@ -113,9 +113,9 @@ static inline void InitializeDevice(Device* device)
 
     device->textureUniform    = glGetUniformLocation(device->program, "u_Texture");
     device->projectionUniform = glGetUniformLocation(device->program, "u_ProjectionMatrix");
-    device->positionAttribute = glGetAttribLocation(device->program, "a_Position");
-    device->uvAttribute       = glGetAttribLocation(device->program, "a_TexCoord");
-    device->colorAttribute    = glGetAttribLocation(device->program, "a_Color");
+    device->positionAttribute = glGetAttribLocation(device->program,  "a_Position");
+    device->uvAttribute       = glGetAttribLocation(device->program,  "a_TexCoord");
+    device->colorAttribute    = glGetAttribLocation(device->program,  "a_Color");
 
     size_t vertexPosition = offsetof(Vertex, position);
     size_t vertexTexture  = offsetof(Vertex, uv);
@@ -261,7 +261,7 @@ static inline void Device_OnRender(Device* device, struct nk_context* context, i
     glDisable(GL_SCISSOR_TEST);
 }
 
-static inline void ErrorCallback(int error, const char* description)      { ERRROR("[GLFW ERROR %d]: %s.", error, description);                                              }
+static inline void ErrorCallback(int error, const char* description)      { ERROR("[GLFW ERROR %d]: %s.", error, description);                                              }
 static inline void TextInput(GLFWwindow* window, unsigned int codepoint)  { nk_input_unicode((struct nk_context*)glfwGetWindowUserPointer(window), codepoint);               }
 static inline void ScrollInput(GLFWwindow* window, double _, double yOff) { nk_input_scroll( (struct nk_context*)glfwGetWindowUserPointer(window), nk_vec2(0, (float)yOff)); }
 

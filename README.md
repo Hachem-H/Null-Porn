@@ -11,14 +11,11 @@ _* The project uses [premake](https://github.premake.io) as a build system_.
 ```sh
 .
 ├── Branding      # Resources used for the github repository
+├── Vendor        # External Dependencies
 ├── NullPorn-Core # Core Files and API, contains the attacks
-│   └── src
 ├── NullPorn-CLI  # CLI frontend for <NullPorn-Core>
-│   └── src
 ├── NullPorn-GUI  # GUI frontend for <NullPorn-Core>
-│   ├── Vendor    # External Dependencies
-│   └── src
-├── LICENSE       # Licensing
+├── LICENSE
 ├── README.md
 └── premake5.lua  # Build script and Project configuration
 ```
@@ -29,7 +26,7 @@ This project is primarily optimized for Unix-based systems. It leverages the `ne
 
 ### External Dependencies
 
-The command line interface is implemented using [ncurses](https://invisible-island.net/ncurses/), a popular library for creating text-based user interfaces. It provides a rich set of functionalities for creating interactive command line interfaces.
+The command line interface is implemented using [ncurses](https://invisible-island.net/ncurses/), a popular library for creating text-based user interfaces. It provides a rich set of functionalities for creating interactive command line interfaces. Some core functionality is facilitated by the use of the [stb](https://github.com/nothings/stb) header.
 
 The graphical user interface is built using OpenGL/[GLEW](https://glew.sourceforge.net/) and [GLFW](https://glfw.org) as a windowing system. It provides a visually appealing and interactive user interface. Additionally, the UI components are implemented using [Nuklear](https://immediate-mode-ui.github.io/Nuklear/doc/index.html), a lightweight immediate mode GUI library.
 
