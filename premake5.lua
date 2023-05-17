@@ -116,6 +116,6 @@ project "NullPorn-CLI"
             "%{prj.location}/src/**.h" }
     includedirs { "%{prj.location}/src",
                   "%{wks.location}/NullPorn-Core/src",
-                  
+
                   "%{wks.location}/Vendor/stb", }
-    links { "NullPorn-Core" }
+    links { "NullPorn-Core", "ncurses" }
