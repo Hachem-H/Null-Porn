@@ -30,14 +30,14 @@ static void __Log(const char* level, const char* file, const uint32_t line, cons
 #endif
 }
 
+#define ERROR(...) { __Log("ERROR", __FILENAME__, __LINE__, __TIME__); printf(__VA_ARGS__); putchar('\n'); }
+#define FATAL(...) { __Log("FATAL", __FILENAME__, __LINE__, __TIME__); printf(__VA_ARGS__); putchar('\n'); }
 
 #ifndef NP_DIST
 	#define TRACE(...) { __Log("TRACE", __FILENAME__, __LINE__, __TIME__); printf(__VA_ARGS__); putchar('\n'); }
 	#define DEBUG(...) { __Log("DEBUG", __FILENAME__, __LINE__, __TIME__); printf(__VA_ARGS__); putchar('\n'); }
 	#define INFO(...)  { __Log("INFO",  __FILENAME__, __LINE__, __TIME__); printf(__VA_ARGS__); putchar('\n'); }
 	#define WARN(...)  { __Log("WARN",  __FILENAME__, __LINE__, __TIME__); printf(__VA_ARGS__); putchar('\n'); }
-	#define ERROR(...) { __Log("ERROR", __FILENAME__, __LINE__, __TIME__); printf(__VA_ARGS__); putchar('\n'); }
-	#define FATAL(...) { __Log("FATAL", __FILENAME__, __LINE__, __TIME__); printf(__VA_ARGS__); putchar('\n'); }
 #else
 	#define TRACE(...)
 	#define DEBUG(...)

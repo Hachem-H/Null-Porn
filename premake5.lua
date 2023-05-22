@@ -85,24 +85,19 @@ project "NullPorn-Core"
 
                   "%{wks.location}/Vendor/stb" }
 
-project "NullPorn-GUI"
-	location "%{wks.location}/%{prj.name}"
-	kind "ConsoleApp"
-	language "C"
+project "NullPorn-CMD"
+    location "%{wks.location}/%{prj.name}"
+    kind "ConsoleApp"
+    language "C"
 
-	targetdir  "%{wks.location}/bin/"
-	objdir "%{wks.location}/bin-int/%{prj.name}-%{cfg.buildcfg}/"
+    targetdir  "%{wks.location}/bin/"
+    objdir "%{wks.location}/bin-int/%{prj.name}-%{cfg.buildcfg}/"
 
-	files { "%{prj.location}/src/**.c",
-			"%{prj.location}/src/**.h" }
-	includedirs { "%{prj.location}/src",
-				  "%{wks.location}/NullPorn-Core/src",
-
-                  "%{wks.location}/Vendor/glfw/include",
-                  "%{wks.location}/Vendor/glfw/include",
-                  "%{wks.location}/Vendor/Nuklear",  
-                  "%{wks.location}/Vendor/stb",  }
-	links { "NullPorn-Core", "glfw", "glew", "GL", "m" }
+    files { "%{prj.location}/src/**.c",
+            "%{prj.location}/src/**.h" }
+    includedirs { "%{prj.location}/src",
+                  "%{wks.location}/NullPorn-Core/src"  }
+    links { "NullPorn-Core" }
 
 project "NullPorn-CLI"
     location "%{wks.location}/%{prj.name}"
@@ -116,6 +111,23 @@ project "NullPorn-CLI"
             "%{prj.location}/src/**.h" }
     includedirs { "%{prj.location}/src",
                   "%{wks.location}/NullPorn-Core/src",
-
                   "%{wks.location}/Vendor/stb", }
     links { "NullPorn-Core", "newt" }
+
+project "NullPorn-GUI"
+	location "%{wks.location}/%{prj.name}"
+	kind "ConsoleApp"
+	language "C"
+
+	targetdir  "%{wks.location}/bin/"
+	objdir "%{wks.location}/bin-int/%{prj.name}-%{cfg.buildcfg}/"
+
+	files { "%{prj.location}/src/**.c",
+			"%{prj.location}/src/**.h" }
+	includedirs { "%{prj.location}/src",
+				  "%{wks.location}/NullPorn-Core/src",
+                  "%{wks.location}/Vendor/glfw/include",
+                  "%{wks.location}/Vendor/glfw/include",
+                  "%{wks.location}/Vendor/Nuklear",  
+                  "%{wks.location}/Vendor/stb",  }
+	links { "NullPorn-Core", "glfw", "glew", "GL", "m" }

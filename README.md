@@ -13,6 +13,7 @@ _* The project uses [premake](https://github.premake.io) as a build system_.
 ├── Branding      # Resources used for the github repository
 ├── Vendor        # External Dependencies
 ├── NullPorn-Core # Core Files and API, contains the attacks
+├── NullPorn-CMD  # CMD frontend for <NullPorn-Core>
 ├── NullPorn-CLI  # CLI frontend for <NullPorn-Core>
 ├── NullPorn-GUI  # GUI frontend for <NullPorn-Core>
 ├── LICENSE
@@ -31,12 +32,16 @@ The command line interface is implemented using [newt](https://pagure.io/newt), 
 The graphical user interface is built using OpenGL/[GLEW](https://glew.sourceforge.net/) and [GLFW](https://glfw.org) as a windowing system. It provides a visually appealing and interactive user interface. Additionally, the UI components are implemented using [Nuklear](https://immediate-mode-ui.github.io/Nuklear/doc/index.html), a lightweight immediate mode GUI library.
 
 ## Screenshots
-
-
-
 ![cli](Branding/Screenshot-CLI.png)
+**  The CLI frontend*
+![cmd](Branding/Screenshot-CMD.png)
+** The CMD frontend*
 
-*The CLI frontend*
+## TODO
+- [x] Core API
+- [x] Command line interface
+- [ ] CLI frontend
+- [ ] GUI frontend
 
 ## Disclaimer
 
