@@ -1,150 +1,67 @@
-#include <ncurses.h>
+#include <sys/ioctl.h>
+#include <newt.h>
 
+#include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
+#include <stdio.h>
 
-int main()
+void Dialog(newtComponent* form, const char* label, char* output)
 {
-    char* windowLabel = "NULL PORN";
-    char* addURLLabel = "[Add URL]";
-    char* addIpLabel = "[Add IP]";
-    char* attackLabel = "[ATTACK]";
+    newtCenteredWindow(22, 3, label);
 
-    initscr();
-    cbreak();
-    keypad(stdscr, true);
-    noecho();
+    char* buffer = "";
+    newtComponent entry = newtEntry(1, 1, "", 20, (const char**)&buffer, NEWT_FLAG_SCROLL | NEWT_FLAG_RETURNEXIT);
+    newtComponent button = newtCompactButton(8, 2, "Ok");
+    newtFormAddComponents(*form, entry, button, NULL);
+    newtRunForm(*form);
+    strcpy(output, buffer);
+    newtFormDestroy(*form);
+}
 
-    WINDOW* menu = newwin(3, COLS, 0, 0);
-    WINDOW* content = newwin(LINES - 3, COLS, 3, 0);
-    refresh();
+void AddIpCallback(newtComponent component, void* data)
+{
+    char ipAddress[0x800];
+    newtComponent ipForm = newtForm(NULL, NULL, 0);
+    Dialog(&ipForm, "Add IP", ipAddress);
+}
 
-    scrollok(menu, false);
-    scrollok(content, true);
+void AddUrlCallback(newtComponent component, void* data)
+{
+    char urlAddress[0x800];
+    newtComponent urlForm = newtForm(NULL, NULL, 0);
+    Dialog(&urlForm, "Add URL", urlAddress);
+}
 
-    mvwprintw(menu, 0, (COLS - strlen(windowLabel)) / 2, windowLabel);
-    mvwprintw(content, 0, 1, "Attacked URLs/IPs");
+int main() 
+{
+    struct winsize windowSize;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &windowSize);
 
-    int numIds = 150;
-    char* temporaryIds[numIds];
-    for (int i = 0; i < numIds; i++)
+    newtInit();
+    newtCls();
+    
+    newtCenteredWindow(windowSize.ws_col-5, windowSize.ws_row-5, "Null Porn");
+    newtRefresh();
+
+    newtComponent content   = newtForm(NULL, NULL, 0);
+
+    newtComponent addIPButton  = newtButton(1, 1, "Add IP");
+    newtComponent addURLButton = newtButton(15, 1, "Add URL");
+    newtComponent attackButton = newtButton(windowSize.ws_col-17, 1, "ATTACK");
+
+    newtComponent contentList = newtListbox(1, 6, windowSize.ws_row-11, NEWT_FLAG_SCROLL | NEWT_FLAG_BORDER);
+    newtListboxSetWidth(contentList, windowSize.ws_col-7);
+    for (int i = 0; i < 50; i++)
     {
-        temporaryIds[i] = malloc(12 * sizeof(char));
-        sprintf(temporaryIds[i], "127.0.0.%d", i + 1);
+        char ip[15];
+        sprintf(ip, "127.0.0.%d", i + 1);
+        newtListboxAppendEntry(contentList, ip, (void*)(intptr_t)i);
     }
+    
+    newtFormAddComponents(content, addIPButton, addURLButton, attackButton, contentList, NULL);
+    newtRunForm(content);
 
-    int contentOffset = 0;
-    int visibleLines = LINES - 4;
-    int numVisibleIds = (numIds < visibleLines) ? numIds : visibleLines;
-
-    for (int i = 0; i < numVisibleIds; i++)
-        mvwprintw(content, i + 1, 2, "[-] %s", temporaryIds[i]);
-
-    mvwprintw(menu, 1, 2, addURLLabel);
-    mvwprintw(menu, 1, strlen(addURLLabel) + 4, addIpLabel);
-    mvwprintw(menu, 1, COLS - strlen(attackLabel) - 2, attackLabel);
-
-    int cursorState = 0;
-    int cursorX = 1;
-    int cursorY = 1;
-    int key;
-
-    box(menu, 0, 0);
-    box(content, 0, 0);
-
-    wmove(menu, cursorY, cursorX);
-    wrefresh(content);
-    wrefresh(menu);
-
-    while ((key = getch()) != KEY_F(1))
-    {
-
-        switch (key)
-        {
-            case KEY_LEFT:
-                if (cursorX > 1)
-                    cursorX--;
-                break;
-            case KEY_RIGHT:
-                if (cursorX < COLS - 2)
-                    cursorX++;
-                break;
-
-            case KEY_UP:
-            {
-                if (cursorY > 1)
-                    cursorY--;
-                else if (cursorState % 2 != 0)
-                {
-                    if (contentOffset > 0)
-                    {
-                        contentOffset--;
-                        werase(content);
-                        box(content, 0, 0);
-                        for (int i = 0; i < numVisibleIds; i++)
-                            mvwprintw(content, i + 1, 2, "[-] %s", temporaryIds[i + contentOffset]);
-                        wrefresh(content);
-                    }
-                }
-            }
-            break;
-
-            case KEY_DOWN:
-            {
-                if (cursorState % 2 == 0)
-                {
-                    if (cursorY < 1)
-                        cursorY++;
-                }
-                else
-                {
-                    if (cursorY < numVisibleIds-1)
-                        cursorY++;
-                    else
-                    {
-                        if (contentOffset + visibleLines - 1 < numIds)
-                        {
-                            contentOffset++;
-                            werase(content);
-                            box(content, 0, 0);
-                            for (int i = 0; i < numVisibleIds-1; i++)
-                                mvwprintw(content, i + 1, 2, "[-] %s", temporaryIds[i + contentOffset]);
-                            wrefresh(content);
-                        }
-                    }
-                }
-            }
-            break;
-
-            case '\t':
-            {
-                cursorState++;
-                cursorX = 1;
-                cursorY = 1;
-            }
-            break;
-
-            default:
-                break;
-        }
-
-        box(menu, 0, 0);
-        box(content, 0, 0);
-
-        if (cursorState % 2 == 0)
-        {
-            wmove(menu, cursorY, cursorX);
-            wrefresh(menu);
-        }
-        else
-        {
-            wmove(content, cursorY, cursorX);
-            wrefresh(content);
-        }
-    }
-
-    for (int i = 0; i < numIds; i++)
-        free(temporaryIds[i]); 
-    endwin();
+    newtFormDestroy(content);
+    newtFinished();
 }

@@ -26,12 +26,20 @@ This project is primarily optimized for Unix-based systems. It leverages the `ne
 
 ### External Dependencies
 
-The command line interface is implemented using [ncurses](https://invisible-island.net/ncurses/), a popular library for creating text-based user interfaces. It provides a rich set of functionalities for creating interactive command line interfaces. Some core functionality is facilitated by the use of the [stb](https://github.com/nothings/stb) header.
+The command line interface is implemented using [newt](https://pagure.io/newt), a popular library for creating text-based user interfaces. It provides a rich set of functionalities for creating interactive command line interfaces. Some core functionality is facilitated by the use of the [stb](https://github.com/nothings/stb) header.
 
 The graphical user interface is built using OpenGL/[GLEW](https://glew.sourceforge.net/) and [GLFW](https://glfw.org) as a windowing system. It provides a visually appealing and interactive user interface. Additionally, the UI components are implemented using [Nuklear](https://immediate-mode-ui.github.io/Nuklear/doc/index.html), a lightweight immediate mode GUI library.
 
+## Screenshots
+
+
+
+![cli](Branding/Screenshot-CLI.png)
+
+*The CLI frontend*
 
 ## Disclaimer
+
 Although Null-Porn is an open-source project and its repository is publicly available, it is crucial to use this software responsibly and ethically. The purpose of this project is solely educational, intended to shed light on the techniques involved and the potential vulnerabilities of certain systems. **Under no circumstances should this project be used for any malicious or harmful activities.** Any misuse or unethical use of the scripts is strictly prohibited.
 
 Please respect the principles of responsible usage and ensure that you adhere to legal and ethical standards when engaging with this project.

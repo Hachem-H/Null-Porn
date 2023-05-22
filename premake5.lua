@@ -118,4 +118,4 @@ project "NullPorn-CLI"
                   "%{wks.location}/NullPorn-Core/src",
 
                   "%{wks.location}/Vendor/stb", }
-    links { "NullPorn-Core", "ncurses" }
+    links { "NullPorn-Core", "newt" }
