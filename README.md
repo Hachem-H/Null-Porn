@@ -33,9 +33,9 @@ The graphical user interface is built using OpenGL/[GLEW](https://glew.sourcefor
 
 ## Screenshots
 ![cli](Branding/Screenshot-CLI.png)
-**  The CLI frontend*
+_*The CLI frontend_
 ![cmd](Branding/Screenshot-CMD.png)
-** The CMD frontend*
+_*The CMD frontend_
 
 ## TODO
 - [x] Core API
