@@ -1,7 +1,6 @@
 workspace "NullPorn"
     configurations { "Debug", "Release", "Distribution" }
     architecture "x86_64"
-    startproject "NullPorn-Gui"
     systemversion "latest"
 
     filter "configurations:Debug"
