@@ -40,7 +40,7 @@ The graphical user interface is built using OpenGL/[GLEW](https://glew.sourcefor
 ## TODO
 - [x] Core API
 - [x] Command line interface
-- [ ] CLI frontend
+- [x] CLI frontend
 - [ ] GUI frontend
 
 ## Disclaimer
