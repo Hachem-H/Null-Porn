@@ -7,3 +7,6 @@
 [submodule "NullPorn-Core/Vendor/stb"]
 	path = Vendor/stb
 	url = https://github.com/nothings/stb/
+[submodule "Vendor/raygui"]
+	path = Vendor/raygui
+	url = https://github.com/raysan5/raygui

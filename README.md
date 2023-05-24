@@ -29,9 +29,11 @@ This project is primarily optimized for Unix-based systems. It leverages the `ne
 
 The command line interface is implemented using [newt](https://pagure.io/newt), a popular library for creating text-based user interfaces. It provides a rich set of functionalities for creating interactive command line interfaces. Some core functionality is facilitated by the use of the [stb](https://github.com/nothings/stb) header.
 
-The graphical user interface is built using OpenGL/[GLEW](https://glew.sourceforge.net/) and [GLFW](https://glfw.org) as a windowing system. It provides a visually appealing and interactive user interface. Additionally, the UI components are implemented using [Nuklear](https://immediate-mode-ui.github.io/Nuklear/doc/index.html), a lightweight immediate mode GUI library.
+The graphical user interface is built using [raylib](https://www.raylib.com/), more specifically, [raygui](https://github.com/raysan5/raygui)
 
 ## Screenshots
+![gui](Branding/Screenshot-GUI.png)
+_*The GUI frontend_
 ![cli](Branding/Screenshot-CLI.png)
 _*The CLI frontend_
 ![cmd](Branding/Screenshot-CMD.png)

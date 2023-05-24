@@ -16,9 +16,6 @@ workspace "NullPorn"
         optimize "On"
         symbols "Off"
 
-group "Dependencies"
-group ""
-        
 project "NullPorn-Core"
     location "%{wks.location}/%{prj.name}"
     kind "StaticLib"
@@ -29,9 +26,7 @@ project "NullPorn-Core"
 
     files { "%{prj.location}/src/**.c",
             "%{prj.location}/src/**.h" }
-    includedirs { "%{prj.location}/src",
-
-                  "%{wks.location}/Vendor/stb" }
+    includedirs { "%{prj.location}/src" }
 
 project "NullPorn-CMD"
     location "%{wks.location}/%{prj.name}"
@@ -74,8 +69,6 @@ project "NullPorn-GUI"
 			"%{prj.location}/src/**.h" }
 	includedirs { "%{prj.location}/src",
 				  "%{wks.location}/NullPorn-Core/src",
-                  "%{wks.location}/Vendor/glfw/include",
-                  "%{wks.location}/Vendor/glfw/include",
-                  "%{wks.location}/Vendor/Nuklear",  
+                  "%{wks.location}/Vendor/raygui/src",
                   "%{wks.location}/Vendor/stb",  }
-	links { "NullPorn-Core", }
+	links { "NullPorn-Core", "raylib", "m" }
