@@ -33,7 +33,7 @@ int ValidIP(char* ip)
 
 void StopFlood()
 {
-    printf("\n%d [DATA] packets sent\n", packetCount);
+    printf("\n%d [DATA] packets sent to %s\n", packetCount, sourceIP);
     isSending = false;
 }
 
@@ -149,7 +149,6 @@ void Flood(void* destinationIPvoid)
             printf("\n[ERR: %s] Program terminated\n", destinationIP);
             exit(0);
         } else packetCount++;
-        printf("%d\n", packetCount);
     }
 
     close(socketFD);
