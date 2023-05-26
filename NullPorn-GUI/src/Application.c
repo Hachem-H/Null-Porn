@@ -16,12 +16,8 @@ int main()
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Null-Porn");
     SetTargetFPS(60);
    
-    int numEntries = 0;
-    int numURLs = 0;
-    int numIPs = 0;
-
     Rectangle panelRect        = { 25, 50+WINDOW_HEIGHT/12, WINDOW_WIDTH-50, WINDOW_HEIGHT-150 };
-    Rectangle panelContentRect = { 0, 0, panelRect.width-15, numEntries * 1.2 * 30 + 100 };
+    Rectangle panelContentRect = { 0, 0, panelRect.width-15, 0 };
     Vector2   panelScroll      = { 99, 0 };
 
     bool showAddIP  = false;
@@ -35,25 +31,38 @@ int main()
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
+        int numEntries = arrlen(GlobalIPs)+arrlen(GlobalURLs);
+        panelContentRect.height = numEntries*1.2*30+100;
+
         if (!showAddIP && !showAddURL)
         {
             Rectangle content = GuiScrollPanel(panelRect, NULL, panelContentRect, &panelScroll);
             BeginScissorMode(content.x, content.y, content.width, content.height);
-            for (int i = 0; i < numIPs; i++)
+            int baseY = panelScroll.y+panelRect.y+15;
+            GuiSetStyle(DEFAULT, TEXT_SIZE, 21);
+            GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);
+            for (int i = 0; i < arrlen(GlobalIPs); i++)
             {
-                GuiSetStyle(DEFAULT, TEXT_SIZE, 21);
-                GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);
-                GuiLabel((Rectangle) { panelRect.x + 15, panelScroll.y + panelRect.y+15+i*35, content.width - 100, 30 }, GlobalIPs[i]);
-                GuiButton((Rectangle) { panelRect.width-75-WINDOW_HEIGHT/12, panelScroll.y+panelRect.y+15+i*35, WINDOW_WIDTH/12, 30}, GuiIconText(ICON_BIN, "Remove"));
+                int lineY = baseY + i*35;
+                GuiLabel((Rectangle) { panelRect.x + 15, lineY, content.width - 100, 30 }, GlobalIPs[i]);
+                if(GuiButton((Rectangle) { panelRect.width-75-WINDOW_HEIGHT/12, lineY, WINDOW_WIDTH/12, 30}, GuiIconText(ICON_BIN, "Remove")))
+                {
+                    arrdel(GlobalIPs, i);
+                    goto DoneButtons;
+                }
             }
-            for (int i = 0; i < numURLs; i++)
+            for (int i = 0; i < arrlen(GlobalURLs); i++)
             {
-                GuiSetStyle(DEFAULT, TEXT_SIZE, 21);
-                GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);
-                GuiLabel((Rectangle) { panelRect.x + 15, panelScroll.y + panelRect.y+15+i*35, content.width - 100, 30 }, GlobalURLs[i]);
-                GuiButton((Rectangle) { panelRect.width-75-WINDOW_HEIGHT/12, panelScroll.y+panelRect.y+15+i*35, WINDOW_WIDTH/12, 30}, GuiIconText(ICON_BIN, "Remove"));
+                int lineY = baseY + arrlen(GlobalIPs)*35 + i*35;
+                GuiLabel((Rectangle) { panelRect.x + 15, lineY, content.width - 100, 30 }, GlobalURLs[i]);
+                if(GuiButton((Rectangle) { panelRect.width-75-WINDOW_HEIGHT/12, lineY, WINDOW_WIDTH/12, 30}, GuiIconText(ICON_BIN, "Remove")))
+                {
+                    arrdel(GlobalURLs, i);
+                    goto DoneButtons;
+                }
             }
-            EndScissorMode();
+
+            DoneButtons: EndScissorMode();
             
             GuiSetStyle(DEFAULT, TEXT_SIZE, 28);
             GuiSetStyle(BUTTON, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
@@ -84,7 +93,6 @@ int main()
 
             if (GuiButton((Rectangle) { WINDOW_WIDTH/2+50, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Okay"))
             {
-                numIPs++;
                 arrput(GlobalIPs, strdup(ipBuffer));
                 memset(ipBuffer, 0, 0x800);
                 showAddIP = false;
@@ -109,7 +117,6 @@ int main()
 
             if (GuiButton((Rectangle) { WINDOW_WIDTH/2+50, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Okay"))
             {
-                numURLs++;
                 arrput(GlobalURLs, strdup(urlBuffer));
                 memset(urlBuffer, 0, 0x800);
                 showAddURL = false;
