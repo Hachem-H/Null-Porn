@@ -18,20 +18,27 @@
 static char** GlobalIPs  = NULL;
 static char** GlobalURLs = NULL;
 
-void* FloodThread(void* arg)
+static void* FloodThread(void* arg)
 {
     char* ipAddress = (char*)arg;
     Flood(ipAddress);
     return NULL;
 }
 
-void* DNSLookupThread(void* arg)
+static void* DNSLookupThread(void* arg)
 {
     char* url = (char*)arg;
     char* ipAddress = DNSLookup(url);
     if (ipAddress != NULL) 
         Flood(ipAddress);
     return NULL;
+}
+
+static void EndProcess(int signal)
+{
+    StopFlood();
+    arrfree(GlobalURLs);
+    arrfree(GlobalIPs);
 }
 
 static bool ValidURL(const char* url)
@@ -104,6 +111,7 @@ int main()
     struct winsize windowSize;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &windowSize);
 
+    signal(SIGINT, EndProcess);
     newtInit();
     newtCls();
 
@@ -152,12 +160,4 @@ int main()
         pthread_create(&ipThreads[i], NULL, FloodThread, GlobalIPs[i]);
     for (int i = 0; i < arrlen(GlobalURLs); i++)
         pthread_create(&urlThreads[i], NULL, DNSLookupThread, GlobalURLs[i]);
-
-    for (int i = 0; i < arrlen(GlobalIPs); i++)
-        pthread_join(ipThreads[i], NULL);
-    for (int i = 0; i < arrlen(GlobalURLs); i++)
-        pthread_join(urlThreads[i], NULL);
-
-    arrfree(GlobalURLs);
-    arrfree(GlobalIPs);
 }

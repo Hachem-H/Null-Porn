@@ -55,6 +55,9 @@ int main()
     Rectangle panelContentRect = { 0, 0, panelRect.width-15, 0 };
     Vector2   panelScroll      = { 99, 0 };
 
+    bool finishedAttack = false;
+    bool showAttack = false;
+
     bool showError = false;
     bool showAddIP  = false;
     bool showAddURL = false;
@@ -71,7 +74,7 @@ int main()
         int numEntries = arrlen(GlobalIPs)+arrlen(GlobalURLs);
         panelContentRect.height = numEntries*1.2*30+100;
 
-        if (!showAddIP && !showAddURL && !showError)
+        if (!showAddIP && !showAddURL && !showError && !showAttack)
         {
             Rectangle content = GuiScrollPanel(panelRect, NULL, panelContentRect, &panelScroll);
             BeginScissorMode(content.x, content.y, content.width, content.height);
@@ -109,7 +112,8 @@ int main()
             if (GuiButton((Rectangle) { 50+WINDOW_WIDTH/12, 25, WINDOW_WIDTH/12, WINDOW_HEIGHT/12 }, "ADD URL"))
                 showAddURL = true;
 
-            GuiButton((Rectangle) { WINDOW_WIDTH-25-WINDOW_WIDTH/12, 25, WINDOW_WIDTH/12, WINDOW_HEIGHT/12 }, "ATTACK");
+            if (GuiButton((Rectangle) { WINDOW_WIDTH-25-WINDOW_WIDTH/12, 25, WINDOW_WIDTH/12, WINDOW_HEIGHT/12 }, "ATTACK"))
+                showAttack = true;
         }
 
         if (showAddIP)
@@ -130,7 +134,7 @@ int main()
             if (GuiButton((Rectangle) { WINDOW_WIDTH/2+50, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Okay"))
             {
                 if (ValidIP(ipBuffer))
-                    memset(ipBuffer, 0, 0x800);
+                    arrput(GlobalIPs, strdup(ipBuffer));
                 else 
                 {
                     errorType = "Invalid IP";
@@ -184,11 +188,39 @@ int main()
             if (GuiButton((Rectangle) { (WINDOW_WIDTH-WINDOW_WIDTH/4+50)/2, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Okay"))
                 showError = false;
         }
+
+        if (showAttack)
+        {
+            if (!finishedAttack)
+            {
+                pthread_t ipThreads[arrlen(GlobalIPs)];
+                pthread_t urlThreads[arrlen(GlobalURLs)];
+
+                for (int i = 0; i < arrlen(GlobalIPs); i++)
+                    pthread_create(&ipThreads[i], NULL, FloodThread, GlobalIPs[i]);
+                for (int i = 0; i < arrlen(GlobalURLs); i++)
+                    pthread_create(&urlThreads[i], NULL, DNSLookupThread, GlobalURLs[i]);
+
+                finishedAttack = true;
+            }
+
+            if (GuiButton((Rectangle) { (WINDOW_WIDTH-WINDOW_WIDTH/4+50)/2, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Stop"))
+            {
+                StopFlood();
+                
+                showAttack = false;
+                finishedAttack = false;
+            }
+        }
         
         EndDrawing();
     }
-
+    
     CloseWindow();
+
+    arrfree(GlobalURLs);
+    arrfree(GlobalIPs);
+
     return 0;
 }
 

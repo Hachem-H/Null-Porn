@@ -31,7 +31,13 @@ int main(int argc, char* argv[])
         {
             char ip[32];
             strcpy(ip, optarg);
-            Flood(ip);
+
+            bool isRunning = true;
+            AttackData data = {
+                .ip = ip,
+                .isRunning = &isRunning,
+            };
+            Flood(&data);
             return 0;
         } break;
 
@@ -40,7 +46,14 @@ int main(int argc, char* argv[])
             char domain[32];
             strcpy(domain, optarg);
             char* ip = DNSLookup(domain); 
-            Flood(ip);
+        
+            bool isRunning = true; 
+            AttackData data = {
+                .ip = ip,
+                .isRunning = &isRunning,
+            };
+
+            Flood(&data);
             free(ip);
             return 0;
         } break;

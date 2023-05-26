@@ -32,14 +32,20 @@ typedef struct PseudoHeader_t
     struct tcphdr tcpHeader;
 } PseudoHeader;
 
+typedef struct AttackData_t
+{
+    char* ip;
+    bool* isRunning;
+} AttackData;
+
 int RandomPort();
 int RandomForIP();
 
 char* RandomIP();
 int ValidIP(char* ip);
 
-void InterruptHandler(int signal);
+void StopFlood();
 uint16_t Checksum(uint16_t* pointer, int numBytes);
 
-void  Flood(void* ip);
+void Flood(void* data);
 char* DNSLookup(const char* domain);
