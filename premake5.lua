@@ -28,7 +28,7 @@ project "NullPorn-Core"
             "%{prj.location}/src/**.h" }
     includedirs { "%{prj.location}/src" }
     
-project "NullPorn-GUI"
+project "NullPorn-CMD"
     location "%{wks.location}/%{prj.name}"
     kind "ConsoleApp"
     language "C"
@@ -40,5 +40,6 @@ project "NullPorn-GUI"
             "%{prj.location}/src/**.h" }
     includedirs { "%{prj.location}/src",
 
-                  "%{wks.location}/NullPorn-Core/src" }
+                  "%{wks.location}/NullPorn-Core/src",
+                  "%{wks.location}/Vendor/stb", }
     links { "NullPorn-Core", "curl" }
