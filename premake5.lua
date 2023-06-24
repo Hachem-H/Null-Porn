@@ -43,3 +43,20 @@ project "NullPorn-CMD"
                   "%{wks.location}/NullPorn-Core/src",
                   "%{wks.location}/Vendor/stb", }
     links { "NullPorn-Core", "curl" }
+
+project "NullPorn-GUI"
+    location "%{wks.location}/%{prj.name}"
+    kind "ConsoleApp"
+    language "C"
+
+    targetdir  "%{wks.location}/bin/"
+    objdir "%{wks.location}/bin-int/%{prj.name}-%{cfg.buildcfg}/"
+
+    files { "%{prj.location}/src/**.c",
+            "%{prj.location}/src/**.h" }
+    includedirs { "%{prj.location}/src",
+
+                  "%{wks.location}/NullPorn-Core/src",
+                  "%{wks.location}/Vendor/raygui/src",
+                  "%{wks.location}/Vendor/stb", }
+    links { "NullPorn-Core", "curl", "raylib", "m" }
