@@ -27,7 +27,7 @@ project "NullPorn-Core"
     files { "%{prj.location}/src/**.c",
             "%{prj.location}/src/**.h" }
     includedirs { "%{prj.location}/src" }
-
+    
 project "NullPorn-CMD"
     location "%{wks.location}/%{prj.name}"
     kind "ConsoleApp"
@@ -39,10 +39,12 @@ project "NullPorn-CMD"
     files { "%{prj.location}/src/**.c",
             "%{prj.location}/src/**.h" }
     includedirs { "%{prj.location}/src",
-                  "%{wks.location}/NullPorn-Core/src"  }
-    links { "NullPorn-Core" }
 
-project "NullPorn-CLI"
+                  "%{wks.location}/NullPorn-Core/src",
+                  "%{wks.location}/Vendor/stb", }
+    links { "NullPorn-Core", "curl" }
+
+project "NullPorn-GUI"
     location "%{wks.location}/%{prj.name}"
     kind "ConsoleApp"
     language "C"
@@ -53,22 +55,8 @@ project "NullPorn-CLI"
     files { "%{prj.location}/src/**.c",
             "%{prj.location}/src/**.h" }
     includedirs { "%{prj.location}/src",
+
                   "%{wks.location}/NullPorn-Core/src",
-                  "%{wks.location}/Vendor/stb", }
-    links { "NullPorn-Core", "newt" }
-
-project "NullPorn-GUI"
-	location "%{wks.location}/%{prj.name}"
-	kind "ConsoleApp"
-	language "C"
-
-	targetdir  "%{wks.location}/bin/"
-	objdir "%{wks.location}/bin-int/%{prj.name}-%{cfg.buildcfg}/"
-
-	files { "%{prj.location}/src/**.c",
-			"%{prj.location}/src/**.h" }
-	includedirs { "%{prj.location}/src",
-				  "%{wks.location}/NullPorn-Core/src",
                   "%{wks.location}/Vendor/raygui/src",
-                  "%{wks.location}/Vendor/stb",  }
-	links { "NullPorn-Core", "raylib", "m" }
+                  "%{wks.location}/Vendor/stb", }
+    links { "NullPorn-Core", "curl", "raylib", "m" }

