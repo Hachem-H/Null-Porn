@@ -10,8 +10,9 @@ This project is primarily optimized for Unix-based systems. It leverages the `cu
 ## Screenshots
 
 ![cmd](Branding/Screenshot-CMD.png)
-
 _* Command line interface_
+![gui](Branding/Screenshot-GUI.png)
+_* Graphical user interface_
 
 ## Disclaimer
 
