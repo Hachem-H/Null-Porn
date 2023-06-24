@@ -24,7 +24,10 @@ bool HTTPGetRequest(const char* url)
     CURLcode result = curl_easy_perform(curl);
     if (result != CURLE_OK)
     {
-        fprintf(stderr, "[ERR @ curl_easy_perform()]: %s\n", curl_easy_strerror(result));
+        FILE* logFile = fopen("NullPorn-LOG.txt", "w");
+        fprintf(logFile, "[ERR (%s) curl_easy_perform()]: %s\n", url, curl_easy_strerror(result));
+        fclose(logFile);
+
         retValue = false;
     }
 
