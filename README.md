@@ -1,49 +1,17 @@
 ![logo](Branding/Logo.png)
 
 # Null-Porn
-Null-Porn is a project born out of frustration with the increasing presence of pornographic and explicit content on platforms such as [YouTube](https://youtube.com)/[YouTube Shorts](https://shorts.youtube.com) and [TikTok](https://tiktok.com). These platforms have been inundated with spam bots that not only disrupt the user experience but also display offensive and inappropriate material. In response to this issue, I have taken the initiative to create a set of scripts that aim to mitigate the problem, including a DDoS flood script and various DNS tracker scripts.
+Null-Porn is a project born out of frustration with the increasing presence of pornographic and explicit content on platforms such as [YouTube](https://youtube.com)/[YouTube Shorts](https://shorts.youtube.com) and [TikTok](https://tiktok.com). These platforms have been inundated with spam bots that not only disrupt the user experience but also display offensive and inappropriate material. In response to this issue, I have taken the initiative to a `DDoS` attack which is usually capable to take them down as their security is usually weak. 
 
-## Project Structure
+## Compatibility
 
-_* The project uses [premake](https://github.premake.io) as a build system_.
-
-### Directory Hierarchy
-```sh
-.
-├── Branding      # Resources used for the github repository
-├── Vendor        # External Dependencies
-├── NullPorn-Core # Core Files and API, contains the attacks
-├── NullPorn-CMD  # CMD frontend for <NullPorn-Core>
-├── NullPorn-CLI  # CLI frontend for <NullPorn-Core>
-├── NullPorn-GUI  # GUI frontend for <NullPorn-Core>
-├── LICENSE
-├── README.md
-└── premake5.lua  # Build script and Project configuration
-```
-
-### Compatibility
-
-This project is primarily optimized for Unix-based systems. It leverages the `netinet` C standard socket library, which is commonly available on Unix systems. While it may also work on other operating systems, it is recommended to use a Unix system for the best compatibility and performance.
-
-### External Dependencies
-
-The command line interface is implemented using [newt](https://pagure.io/newt), a popular library for creating text-based user interfaces. It provides a rich set of functionalities for creating interactive command line interfaces. Some core functionality is facilitated by the use of the [stb](https://github.com/nothings/stb) header.
-
-The graphical user interface is built using [raylib](https://www.raylib.com/), more specifically, [raygui](https://github.com/raysan5/raygui)
+This project is primarily optimized for Unix-based systems. It leverages the `curl`  library, which is commonly available on Unix systems. While it may also work on other operating systems, it is recommended to use a Unix system for the best compatibility and performance.
 
 ## Screenshots
-![gui](Branding/Screenshot-GUI.png)
-_*The GUI frontend_
-![cli](Branding/Screenshot-CLI.png)
-_*The CLI frontend_
-![cmd](Branding/Screenshot-CMD.png)
-_*The CMD frontend_
 
-## TODO
-- [x] Core API
-- [x] Command line interface
-- [x] CLI frontend
-- [ ] GUI frontend
+![cmd](Branding/Screenshot-CMD.png)
+
+_* Command line interface_
 
 ## Disclaimer
 
