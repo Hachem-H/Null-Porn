@@ -1,4 +1,4 @@
-#include <DDoS.h>
+#include <NullPorn.h>
 
 int main()
 {
@@ -7,4 +7,7 @@ int main()
     RunAttack(&attack);
     sleep(1);
     StopAttack(&attack);
+
+    printf("Total Requests: %d\n", attack.data->totalRequests);
+    printf("Successful Requests: %d\n", attack.data->successfulRequests);
 }
