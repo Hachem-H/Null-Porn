@@ -31,6 +31,8 @@ typedef struct DDoS_t
     uint32_t    workersCount;
 } DDoS;
 
+bool ValidURL(const char* url);
+bool ValidNumber(const char* text);
 bool HTTPGetRequest(const char* url);
 
 void CreateAttack(DDoS* ddos, char* url, uint32_t workersCount);

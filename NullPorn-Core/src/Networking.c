@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "NullPorn.h"
+
 static size_t s_WriteCallback(char* pointer, size_t size, size_t nmemb, void* userPointer)
 {
     size_t totalSize = size*nmemb;

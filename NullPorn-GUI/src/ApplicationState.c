@@ -3,32 +3,28 @@
 #include <raygui.h>
 
 #include <pthread.h>
-#include <regex.h>
-#include <ctype.h>
+#include <stdlib.h>
 
 #include "ApplicationState.h"
+#include "Layout.h"
 
-static bool ValidURL(const char* url)
+void InitializeApp(Application* application)
 {
-    regex_t regex;
-    int ret;
-    const char* pattern = "^(https?|ftp)://[^\\s/$.?#].[^\\s]*$";
+    application->state                    = ApplicationState_Menu;
+    application->attacks                  = NULL;      
+    application->URLs                     = NULL;
+    application->enableWorkersBufferEntry = false;
+    application->workersCount             = 100;
+    application->workersCountBuffer       = (char*)malloc(0x800);
+    application->urlBuffer                = (char*)malloc(0x800);
+    application->errorBuffer              = NULL;
 
-    ret = regcomp(&regex, pattern, REG_EXTENDED);
-    if (ret != 0) 
-        return false;
+    application->panelRect                = (Rectangle) { __PANEL_RECT    };
+    application->panelContentRect         = (Rectangle) { __PANEL_CONTENT };
+    application->panelScroll              = (Vector2)   { __PANEL_SCROLL  };
 
-    ret = regexec(&regex, url, 0, NULL, 0);
-    regfree(&regex);
-    return !ret;
-}
-
-static bool ValidNumber(const char *text)
-{
-    for (size_t i = 0; i < strlen(text); i++)
-        if (!isdigit(text[i]))
-            return false;
-    return true;
+    strcpy(application->workersCountBuffer, "100");
+    strcpy(application->urlBuffer, "");
 }
 
 void UpdateApp(Application* application)
@@ -36,17 +32,25 @@ void UpdateApp(Application* application)
     application->panelContentRect.height = arrlen(application->URLs)*36+100;
 }
 
+void DeleteApp(Application* application)
+{
+    if (application->attacks != NULL)
+        free(application->attacks);
+    free(application->workersCountBuffer);
+    free(application->urlBuffer);
+}
+
 void RenderMenu(Application* application)
 {
     Rectangle content = GuiScrollPanel(application->panelRect, NULL, application->panelContentRect, &application->panelScroll);
     BeginScissorMode(content.x, content.y, content.width, content.height);
 
-    GuiSetStyle(DEFAULT, TEXT_SIZE, 21);
-    GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);
+    GuiSetStyle(DEFAULT, TEXT_SIZE,      21);
+    GuiSetStyle(LABEL,   TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);
     for (int i = 0; i < arrlen(application->URLs); i++)
     {
-        GuiLabel((Rectangle) { application->panelRect.x + 15, application->panelScroll.y+application->panelRect.y+15 + i*35, content.width - 100, 30 }, application->URLs[i]);
-        if(GuiButton((Rectangle) { application->panelRect.width-75-WINDOW_HEIGHT/12, application->panelScroll.y+application->panelRect.y+15 + i*35, WINDOW_WIDTH/12, 30}, GuiIconText(ICON_BIN, "Remove")))
+        GuiLabel(    (Rectangle) { __MENU_URLS_RECT   }, application->URLs[i]);
+        if(GuiButton((Rectangle) { __MENU_REMOVE_URLS }, GuiIconText(ICON_BIN, "Remove")))
         {
             arrdel(application->URLs, i);
             break;
@@ -55,44 +59,44 @@ void RenderMenu(Application* application)
     
     EndScissorMode();
 
-    GuiSetStyle(DEFAULT, TEXT_SIZE, 28);
-    GuiSetStyle(BUTTON, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
-    if (GuiTextBox((Rectangle) { 100+WINDOW_HEIGHT/12, 25, WINDOW_HEIGHT/12, WINDOW_HEIGHT/12 }, application->workersCountBuffer, 0x800, application->enableWorkersBufferEntry))
+    GuiSetStyle(DEFAULT, TEXT_SIZE,      28);
+    GuiSetStyle(BUTTON,  TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
+    if (GuiTextBox((Rectangle) { __MENU_WORKERS_RECT }, application->workersCountBuffer, 0x800, application->enableWorkersBufferEntry))
         if (ValidNumber(application->workersCountBuffer))
         {
-            application->workersCount = atoi(application->workersCountBuffer);
+            application->workersCount             = atoi(application->workersCountBuffer);
             application->enableWorkersBufferEntry = !application->enableWorkersBufferEntry;
         }
 
-    if (GuiButton((Rectangle) { 25, 25, WINDOW_WIDTH/12, WINDOW_HEIGHT/12 }, "ADD HOST"))
+    if (GuiButton((Rectangle) { __MENU_ADD_RECT    }, "ADD HOST"))
         application->state = ApplicationState_Add;
-    if (GuiButton((Rectangle) { WINDOW_WIDTH-25-WINDOW_WIDTH/12, 25, WINDOW_WIDTH/12, WINDOW_HEIGHT/12 }, "ATTACK"))
+    if (GuiButton((Rectangle) { __MENU_ATTACK_RECT }, "ATTACK"))
         application->state = ApplicationState_Attack;
 }
 
 void RenderAdd(Application* application)
 {
-    GuiSetStyle(DEFAULT, TEXT_SIZE, 80);
-    GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
-    GuiLabel((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2-100, WINDOW_WIDTH/2, 80 }, "ADD HOST");
+    GuiSetStyle(DEFAULT, TEXT_SIZE,      80);
+    GuiSetStyle(LABEL,   TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
+    GuiLabel((Rectangle) { __ADD_ADD }, "ADD HOST");
     GuiSetStyle(DEFAULT, TEXT_SIZE, 48);
-    GuiTextBox((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2+100, WINDOW_WIDTH/2, 50 }, application->urlBuffer, 0x800, true);
+    GuiTextBox((Rectangle) { __ADD_ENTRY }, application->urlBuffer, 0x800, true);
     GuiSetStyle(DEFAULT, TEXT_SIZE, 28);
     
-    if (GuiButton((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Cancel"))
+    if (GuiButton((Rectangle) { __ADD_CANCEL }, "Cancel"))
     {
         memset(application->urlBuffer, 0, 0x800);
         application->state = ApplicationState_Menu;
     }
     
-    if (GuiButton((Rectangle) { WINDOW_WIDTH/2+50, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Okay"))
+    if (GuiButton((Rectangle) { __ADD_OKAY }, "Okay"))
     {
         if (ValidURL(application->urlBuffer))
             arrput(application->URLs, strdup(application->urlBuffer));
         else 
         {
             application->errorBuffer = "Invalid HOST";
-            application->state = ApplicationState_Error;
+            application->state       = ApplicationState_Error;
             memset(application->urlBuffer, 0, 0x800);
             return;
         }
@@ -106,12 +110,12 @@ void RenderError(Application* application)
 {
     GuiSetStyle(DEFAULT, TEXT_SIZE, 80);
     GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
-    GuiLabel((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2-100, WINDOW_WIDTH/2, 80 }, "ERROR");
+    GuiLabel((Rectangle) { __ERROR_LABEL }, "ERROR");
     GuiSetStyle(DEFAULT, TEXT_SIZE, 48);
-    GuiLabel((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2+100, WINDOW_WIDTH/2, 50 }, application->errorBuffer);
+    GuiLabel((Rectangle) { __ERROR_ENTRY }, application->errorBuffer);
     GuiSetStyle(DEFAULT, TEXT_SIZE, 28);
 
-    if (GuiButton((Rectangle) { (WINDOW_WIDTH-WINDOW_WIDTH/4+50)/2, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Okay"))
+    if (GuiButton((Rectangle) { __ERROR_BUTTON }, "Okay"))
         application->state = ApplicationState_Menu;
 }
 
@@ -127,12 +131,12 @@ void RenderAttack(Application* application)
 
     GuiSetStyle(DEFAULT, TEXT_SIZE, 80);
     GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
-    GuiLabel((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2-100, WINDOW_WIDTH/2, 80 }, "ATTACK STARTED");
+    GuiLabel((Rectangle) { __ATTACK_LABEL1 }, "ATTACK STARTED");
     GuiSetStyle(DEFAULT, TEXT_SIZE, 48);
-    GuiLabel((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2+100, WINDOW_WIDTH/2, 50 }, "Press stop to end the attack.");
+    GuiLabel((Rectangle) { __ATTACK_LABEL2 }, "Press stop to end the attack.");
     GuiSetStyle(DEFAULT, TEXT_SIZE, 28);
     
-    if(GuiButton((Rectangle) { (WINDOW_WIDTH-WINDOW_WIDTH/4+50)/2, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Stop"))
+    if(GuiButton((Rectangle) { __ATTACK_STOP }, "Stop"))
     {
         for (int i = 0; i < arrlen(application->URLs); i++)
             StopAttack(&application->attacks[i]);
@@ -146,23 +150,23 @@ void RenderAttackFinal(Application* application)
     char successfulBuffer[256];
 
     int successfulRequests = 0;
-    int totalRequests = 0;
+    int totalRequests      = 0;
         
     for (int i = 0; i < arrlen(application->URLs); i++)
     {
         successfulRequests += application->attacks[i].data->successfulRequests;
-        totalRequests += application->attacks[i].data->totalRequests;
+        totalRequests      += application->attacks[i].data->totalRequests;
     }
         
-    snprintf(totalBuffer, sizeof(totalBuffer), "Total Requests: %d", totalRequests);
+    snprintf(totalBuffer,      sizeof(totalBuffer),      "Total Requests: %d",      totalRequests);
     snprintf(successfulBuffer, sizeof(successfulBuffer), "Successful Requests: %d", successfulRequests);
 
     GuiSetStyle(DEFAULT, TEXT_SIZE, 48);
     GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
-    GuiLabel((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2-100, WINDOW_WIDTH/2, 80 }, totalBuffer);
-    GuiLabel((Rectangle) { WINDOW_WIDTH/4, WINDOW_HEIGHT/2+100, WINDOW_WIDTH/2, 50 }, successfulBuffer);
+    GuiLabel((Rectangle) { __FINAL_TOTAL      }, totalBuffer);
+    GuiLabel((Rectangle) { __FINAL_SUCCESSFUL }, successfulBuffer);
 
     GuiSetStyle(DEFAULT, TEXT_SIZE, 28);
-    if(GuiButton((Rectangle) { (WINDOW_WIDTH-WINDOW_WIDTH/4+50)/2, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40 }, "Close"))
+    if(GuiButton((Rectangle) { __FINAL_BUTTON }, "Close"))
         application->state = ApplicationState_Menu;
 }

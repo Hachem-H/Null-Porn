@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #include "ApplicationState.h"
+#include "Layout.h"
 
 int main()
 {
@@ -13,21 +14,7 @@ int main()
     SetTargetFPS(60);
    
     Application application;
-    application.state                    = ApplicationState_Menu;
-    application.attacks                  = NULL;      
-    application.URLs                     = NULL;
-    application.enableWorkersBufferEntry = false;
-    application.workersCount             = 100;
-    application.workersCountBuffer       = (char*)malloc(0x800);
-    application.urlBuffer                = (char*)malloc(0x800);
-    application.errorBuffer              = NULL;
-
-    application.panelRect                = (Rectangle) { 25, 50+WINDOW_HEIGHT/12, WINDOW_WIDTH-50, WINDOW_HEIGHT-150 };
-    application.panelContentRect         = (Rectangle) { 0, 0, application.panelRect.width-15, 0 };
-    application.panelScroll              = (Vector2)   { 99, 0 };
-
-    strcpy(application.workersCountBuffer, "100");
-    strcpy(application.urlBuffer, "");
+    InitializeApp(&application);
 
     while (!WindowShouldClose())
     {
@@ -48,8 +35,5 @@ int main()
         EndDrawing();
     }
 
-    if (application.attacks != NULL)
-        free(application.attacks);
-    free(application.workersCountBuffer);
-    free(application.urlBuffer);
+    DeleteApp(&application);
 }

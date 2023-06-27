@@ -1,0 +1,31 @@
+#pragma once
+
+#define WINDOW_WIDTH  1720
+#define WINDOW_HEIGHT 967
+
+#define __MENU_URLS_RECT    application->panelRect.x + 15,                    application->panelScroll.y+application->panelRect.y+15 + i*35, content.width - 100, 30
+#define __MENU_REMOVE_URLS  application->panelRect.width-75-WINDOW_HEIGHT/12, application->panelScroll.y+application->panelRect.y+15 + i*35, WINDOW_WIDTH/12,     30
+#define __MENU_WORKERS_RECT 100+WINDOW_HEIGHT/12,            25, WINDOW_HEIGHT/12, WINDOW_HEIGHT/12 
+#define __MENU_ADD_RECT     25,                              25, WINDOW_WIDTH/12,  WINDOW_HEIGHT/12
+#define __MENU_ATTACK_RECT  WINDOW_WIDTH-25-WINDOW_WIDTH/12, 25, WINDOW_WIDTH/12,  WINDOW_HEIGHT/12
+
+#define __ERROR_LABEL   WINDOW_WIDTH/4,                    WINDOW_HEIGHT/2-100, WINDOW_WIDTH/2,    80
+#define __ERROR_ENTRY   WINDOW_WIDTH/4,                    WINDOW_HEIGHT/2+100, WINDOW_WIDTH/2,    50
+#define __ERROR_BUTTON (WINDOW_WIDTH-WINDOW_WIDTH/4+50)/2, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40
+
+#define __FINAL_TOTAL       WINDOW_WIDTH/4,                    WINDOW_HEIGHT/2-100, WINDOW_WIDTH/2,    80
+#define __FINAL_SUCCESSFUL  WINDOW_WIDTH/4,                    WINDOW_HEIGHT/2+100, WINDOW_WIDTH/2,    50
+#define __FINAL_BUTTON     (WINDOW_WIDTH-WINDOW_WIDTH/4+50)/2, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40
+
+#define __ADD_ADD    WINDOW_WIDTH/4,    WINDOW_HEIGHT/2-100, WINDOW_WIDTH/2,    80
+#define __ADD_ENTRY  WINDOW_WIDTH/4,    WINDOW_HEIGHT/2+100, WINDOW_WIDTH/2,    50
+#define __ADD_CANCEL WINDOW_WIDTH/4,    WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40
+#define __ADD_OKAY   WINDOW_WIDTH/2+50, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40
+
+#define __ATTACK_LABEL1  WINDOW_WIDTH/4,                    WINDOW_HEIGHT/2-100, WINDOW_WIDTH/2,    80 
+#define __ATTACK_LABEL2  WINDOW_WIDTH/4,                    WINDOW_HEIGHT/2+100, WINDOW_WIDTH/2,    50
+#define __ATTACK_STOP   (WINDOW_WIDTH-WINDOW_WIDTH/4+50)/2, WINDOW_HEIGHT/2+200, WINDOW_WIDTH/4-50, 40
+
+#define __PANEL_RECT    25, 50+WINDOW_HEIGHT/12, WINDOW_WIDTH-50,                 WINDOW_HEIGHT-150
+#define __PANEL_CONTENT 0,  0,                   application->panelRect.width-15, 0
+#define __PANEL_SCROLL  99, 0 

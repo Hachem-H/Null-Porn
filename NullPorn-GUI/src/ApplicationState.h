@@ -5,9 +5,6 @@
 
 #include <NullPorn.h>
 
-#define WINDOW_WIDTH  1720
-#define WINDOW_HEIGHT 967
-
 typedef enum ApplicationState_t
 {
     ApplicationState_Menu,
@@ -36,7 +33,9 @@ typedef struct Application_t
     Vector2 panelScroll;
 } Application;
 
+void InitializeApp(Application* application);
 void UpdateApp(Application* application);
+void DeleteApp(Application* application);
 
 void RenderMenu(Application* application);
 void RenderError(Application* application);
