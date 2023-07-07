@@ -51,10 +51,15 @@ static bool ParseFile(char* filepath, char** urls)
 
 int main(int argc, char** argv)
 {
+    if (argc < 2)
+    {
+        Help();
+        exit(EXIT_FAILURE);
+    }
+
     int options;
 
     char** urls = NULL;
-    int urlsCount   = 0;
     int workerCount = 0;
 
     while ((options = getopt(argc, argv, "D:d:n:")) != -1) 
@@ -67,7 +72,7 @@ int main(int argc, char** argv)
                 break;
             case 'D':
                 char* path = optarg;
-                if (!ParseFile(path, urls));
+                if (!ParseFile(path, urls))
                     exit(EXIT_FAILURE);
                 break;
             case 'n':

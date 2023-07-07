@@ -1,8 +1,4 @@
-bin/
-bin-int/
-
-**/Makefile
-**/*.make
+build/
 
 .vs/
 .vscode/

@@ -16,6 +16,8 @@ static void* WorkerThread(void* data)
             s_AttackData.successfulRequests++;
         s_AttackData.totalRequests++;
     }
+
+    return NULL;
 }
 
 void CreateAttack(DDoS* ddos, char* url, uint32_t workersCount)
